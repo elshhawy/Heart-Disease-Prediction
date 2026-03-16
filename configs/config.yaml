@@ -1,0 +1,55 @@
+# ─────────────────────────────────────────
+#  Heart Disease Prediction — Config File
+# ─────────────────────────────────────────
+
+data:
+  path: "data/heart.csv"
+  target: "HeartDisease"
+  test_size: 0.20
+  val_size: 0.25          # 25% of trainval → 20% of total
+  random_state: 42
+
+features:
+  binary_map:
+    Sex:            {M: 1, F: 0}
+    ExerciseAngina: {Y: 1, N: 0}
+  onehot_cols:
+    - ChestPainType
+    - RestingECG
+    - ST_Slope
+
+training:
+  cv_folds: 5
+  scoring_metric: "roc_auc"
+  random_state: 42
+
+models:
+  logistic_regression:
+    max_iter: 1000
+    random_state: 42
+
+  random_forest:
+    n_estimators: 200
+    max_depth: 10
+    min_samples_leaf: 4
+    random_state: 42
+
+  gradient_boosting:
+    n_estimators: 200
+    max_depth: 4
+    learning_rate: 0.05
+    random_state: 42
+
+  svm:
+    kernel: "rbf"
+    C: 1.0
+    probability: true
+    random_state: 42
+
+  knn:
+    n_neighbors: 7
+
+paths:
+  models_dir:  "models/"
+  plots_dir:   "plots/"
+  outputs_dir: "outputs/"

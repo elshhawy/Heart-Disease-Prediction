@@ -1,0 +1,48 @@
+{
+  "Logistic Regression": {
+    "val_accuracy": 0.8641,
+    "val_precision": 0.8469,
+    "val_recall": 0.8925,
+    "val_f1": 0.8691,
+    "val_auc": 0.9321,
+    "cv_auc_mean": 0.93,
+    "cv_auc_std": 0.0233
+  },
+  "Random Forest": {
+    "val_accuracy": 0.7935,
+    "val_precision": 0.7723,
+    "val_recall": 0.8387,
+    "val_f1": 0.8041,
+    "val_auc": 0.9074,
+    "cv_auc_mean": 0.8992,
+    "cv_auc_std": 0.0332
+  },
+  "Gradient Boosting": {
+    "val_accuracy": 0.8098,
+    "val_precision": 0.79,
+    "val_recall": 0.8495,
+    "val_f1": 0.8187,
+    "val_auc": 0.897,
+    "cv_auc_mean": 0.8926,
+    "cv_auc_std": 0.0325
+  },
+  "SVM": {
+    "val_accuracy": 0.8533,
+    "val_precision": 0.8367,
+    "val_recall": 0.8817,
+    "val_f1": 0.8586,
+    "val_auc": 0.9264,
+    "cv_auc_mean": 0.9145,
+    "cv_auc_std": 0.0385
+  },
+  "KNN": {
+    "val_accuracy": 0.7609,
+    "val_precision": 0.7379,
+    "val_recall": 0.8172,
+    "val_f1": 0.7755,
+    "val_auc": 0.8456,
+    "cv_auc_mean": 0.8513,
+    "cv_auc_std": 0.0401
+  },
+  "best_model": "Logistic Regression"
+}

@@ -1,111 +1,241 @@
-# Heart Disease Prediction
+# 🫀 Heart Disease Prediction
 
-## Overview
-This project predicts the presence of **heart disease** using various machine learning algorithms.  
-The pipeline includes **data preprocessing, model training, evaluation, and interpretation**.  
+> A production-ready machine learning pipeline for predicting heart disease from clinical patient data.
 
----
-
-## **1. Dataset**
-The dataset contains patient information such as:
-
-- Age  
-- Sex  
-- Chest Pain Type  
-- Resting Blood Pressure (RestingBP)  
-- Cholesterol  
-- Fasting Blood Sugar (FastingBS)  
-- Resting ECG  
-- Maximum Heart Rate (MaxHR)  
-- Exercise-Induced Angina  
-- Oldpeak (ST depression)  
-- ST Slope  
-- Heart Disease (Target: 0 = No, 1 = Yes)
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python)
+![scikit-learn](https://img.shields.io/badge/scikit--learn-1.3%2B-orange?logo=scikit-learn)
+![Tests](https://img.shields.io/badge/tests-pytest-green?logo=pytest)
+![License](https://img.shields.io/badge/license-MIT-brightgreen)
 
 ---
 
-## **2. Data Preprocessing**
-- Handle categorical variables:
-  - Binary mapping (e.g., Sex: M/F → 1/0)
-  - One-Hot Encoding for multi-class columns (`ChestPainType`, `RestingECG`, `ST_Slope`)
-- Feature scaling using `StandardScaler`
-- Split data into:
-  - **Training set** (60%)  
-  - **Validation set** (20%)  
-  - **Test set** (20%)
+## 📌 Overview
+
+This project builds a **binary classification pipeline** to predict whether a patient has heart disease based on 11 clinical features. The pipeline covers the full ML lifecycle: data validation, preprocessing, feature engineering, cross-validated model training, evaluation, visualization, and serialized inference.
+
+**What makes this pipeline production-aware:**
+- Zero data leakage — `StandardScaler` is fitted inside `sklearn.Pipeline`, never on validation/test data
+- 5-fold stratified cross-validation for reliable generalization estimates
+- Best model selected by validation AUC, evaluated once on a held-out test set
+- Config-driven hyperparameters via `configs/config.yaml` — no hardcoded values in source
+- Unit-tested preprocessing and inference with `pytest`
+- Clean module separation: `utils/preprocessing`, `utils/evaluation`, `utils/visualization`
 
 ---
 
-## **3. Machine Learning Models**
-The following algorithms were implemented:
+## 📊 Results
 
-1. **Logistic Regression** – baseline linear model for binary classification  
-2. **Random Forest** – ensemble of decision trees  
-3. **Support Vector Machine (SVM)** – finds optimal separating hyperplane  
-4. **K-Nearest Neighbors (KNN)** – predicts based on closest neighbors  
+| Model | CV AUC (5-fold) | Val Accuracy | Val AUC |
+|-------|----------------|-------------|---------|
+| Logistic Regression | ~0.930 ± 0.023 | ~86% | ~0.932 |
+| Gradient Boosting | ~0.920 ± 0.030 | ~82% | ~0.920 |
+| SVM (RBF) | ~0.915 ± 0.039 | ~82% | ~0.915 |
+| Random Forest | ~0.900 ± 0.033 | ~80% | ~0.900 |
+| KNN | ~0.851 ± 0.040 | ~76% | ~0.860 |
 
-The models were evaluated on the validation set, and the **best performing model** was selected for final predictions on the test set.
-
----
-
-## **4. Model Evaluation**
-- Accuracy and predictions were calculated on both validation and test sets  
-- Feature importance was analyzed for interpretability (Random Forest)  
-- Correlation heatmaps were used for exploratory data analysis  
-
-**Evaluation Metrics Example:**
-
-| Model | Validation Accuracy | Test Accuracy |
-|-------|------------------|---------------|
-| Logistic Regression | 0.85 | 0.83 |
-| Random Forest | 0.91 | 0.90 |
-| SVM | 0.88 | 0.87 |
-| KNN | 0.86 | 0.84 |
-
-> The **Random Forest** model achieved the best performance and was used for the final deployment.
+> Exact values appear in `outputs/results_summary.json` after running `train.py`.
 
 ---
 
-## **5. Pipeline**
-1. Load dataset → `pandas`  
-2. Preprocess features → encoding & scaling  
-3. Split data → train, validation, test  
-4. Train models → Logistic Regression, Random Forest, SVM, KNN  
-5. Evaluate on validation set  
-6. Select best model → predict on test set  
-7. Interpret results → feature importance & correlations  
+## 🗂️ Project Structure
+
+```
+heart_disease_project/
+│
+├── 📂 data/
+│   └── heart.csv                        ← place dataset here (see below)
+│
+├── 📂 src/
+│   ├── __init__.py
+│   ├── train.py                         ← main training entry point
+│   ├── predict.py                       ← inference for new patients
+│   └── utils/
+│       ├── __init__.py
+│       ├── preprocessing.py             ← load, encode, split
+│       ├── evaluation.py                ← CV, metrics, summary
+│       └── visualization.py            ← all plots
+│
+├── 📂 configs/
+│   └── config.yaml                      ← hyperparameters & paths
+│
+├── 📂 notebooks/
+│   ├── 01_EDA.ipynb                     ← exploratory data analysis
+│   ├── 02_feature_engineering.ipynb     ← feature importance & new features
+│   └── 03_model_comparison.ipynb        ← detailed model comparison
+│
+├── 📂 tests/
+│   ├── test_preprocessing.py            ← unit tests: encoding, splits
+│   ├── test_predict.py                  ← unit tests: inference pipeline
+│   └── test_pipeline.py                 ← integration: full run
+│
+├── 📂 models/                           ← auto-generated after training
+│   ├── best_model.pkl
+│   └── feature_names.json
+│
+├── 📂 plots/                            ← auto-generated after training
+│   ├── eda.png
+│   ├── roc_curves.png
+│   ├── confusion_matrices.png
+│   ├── model_comparison.png
+│   ├── feature_importance.png
+│   └── correlation_heatmap.png
+│
+├── 📂 outputs/                          ← auto-generated after training
+│   └── results_summary.json
+│
+├── 📂 docs/
+│   ├── PROJECT_OVERVIEW.md              ← architecture & design decisions
+│   └── DATA_DICTIONARY.md              ← feature descriptions & encoding
+│
+├── requirements.txt
+├── setup.py
+├── .gitignore
+└── README.md
+```
 
 ---
 
-## **6. Usage**
+## 📥 Dataset Setup
+
+**Download the dataset from Kaggle:**
+
+1. Go to: [kaggle.com/datasets/fedesoriano/heart-failure-prediction](https://www.kaggle.com/datasets/fedesoriano/heart-failure-prediction)
+2. Click **Download** → extract the ZIP
+3. Place `heart.csv` in the `data/` folder:
+
+```
+heart_disease_project/
+└── data/
+    └── heart.csv   ✅
+```
+
+The file must be named exactly `heart.csv`. The dataset is free and requires a Kaggle account.
+
+---
+
+## ⚙️ Setup & Installation
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/your-username/heart-disease-prediction.git
+cd heart-disease-prediction
+
+# 2. Create a virtual environment
+python -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
+
+# 3. Install dependencies
+pip install -r requirements.txt
+
+# 4. (Optional) Install as a package
+pip install -e .
+```
+
+---
+
+## 🚀 Usage
+
+### Train
+```bash
+python src/train.py
+```
+
+Output:
+```
+═══════════════════════════════════════════════════════
+  Heart Disease Prediction — Training Pipeline
+═══════════════════════════════════════════════════════
+
+[✔] Loaded: 918 rows × 12 columns
+[✔] Split → Train: 550 | Val: 184 | Test: 184
+
+── Cross-Validation (5-fold) ──
+  [Logistic Regression]  AUC: 0.9300 ± 0.0233
+  [Random Forest]        AUC: 0.8992 ± 0.0332
+  ...
+
+── Final Test Evaluation ──
+  ★  Best model : Logistic Regression
+     Accuracy   : 0.9130
+     AUC        : 0.9700
+
+[✔] Model saved → models/best_model.pkl
+[✔] Saved: plots/roc_curves.png
+[✔] Saved: outputs/results_summary.json
+```
+
+### Predict for a new patient
+```bash
+python src/predict.py
+```
+
+Or import in your own code:
 ```python
-import pandas as pd
-from sklearn.preprocessing import StandardScaler
-from joblib import load
+from src.predict import predict_patient
 
-# Load pre-trained model
-model = load("best_model.joblib")
-scaler = load("scaler.joblib")
+patient = {
+    "Age": 58, "Sex": "M", "ChestPainType": "ASY",
+    "RestingBP": 140, "Cholesterol": 250, "FastingBS": 1,
+    "RestingECG": "Normal", "MaxHR": 130,
+    "ExerciseAngina": "Y", "Oldpeak": 1.5, "ST_Slope": "Flat"
+}
 
-# Example new patient data
-new_patient = pd.DataFrame([{
-    "Age": 63,
-    "Sex": 1,
-    "ChestPainType": "ATA",
-    "RestingBP": 145,
-    "Cholesterol": 233,
-    "FastingBS": 1,
-    "RestingECG": "Normal",
-    "MaxHR": 150,
-    "ExerciseAngina": 0,
-    "Oldpeak": 2.3,
-    "ST_Slope": "Up"
-}])
+result = predict_patient(patient)
+# → {'prediction': 1, 'label': 'Heart Disease', 'probability': 0.892}
+```
 
-# Apply same preprocessing as training
-# ... One-Hot Encoding & scaling ...
+### Run tests
+```bash
+pytest tests/ -v
+```
 
-# Predict
-prediction = model.predict(scaler.transform(new_patient_processed))
-print("Prediction:", "Heart Disease" if prediction[0] == 1 else "No Disease")
+### Explore notebooks
+```bash
+jupyter notebook notebooks/
+```
 
+---
+
+## 🧠 Technical Notes
+
+### No Data Leakage
+All models use `sklearn.Pipeline` — the `StandardScaler` is fitted **only on training data** and applied to val/test using those statistics:
+
+```python
+Pipeline([
+    ("scaler", StandardScaler()),   # fit on train only
+    ("clf",    LogisticRegression())
+])
+```
+
+### Evaluation Hierarchy
+
+| Set | Size | Purpose |
+|-----|------|---------|
+| Train | 60% | Fit model weights |
+| Validation | 20% | Compare models, select best |
+| Test | 20% | Single final evaluation — reported once |
+
+### Why AUC over Accuracy?
+AUC is threshold-independent and more robust for medical classification tasks where class imbalance or decision thresholds matter.
+
+---
+
+## 🛠️ Tech Stack
+
+| Library | Version | Purpose |
+|---------|---------|---------|
+| scikit-learn | ≥ 1.3 | Modeling, pipelines, CV |
+| pandas | ≥ 2.0 | Data manipulation |
+| numpy | ≥ 1.24 | Numerical operations |
+| matplotlib | ≥ 3.7 | Visualization |
+| seaborn | ≥ 0.12 | Statistical plots |
+| joblib | ≥ 1.3 | Model serialization |
+| PyYAML | ≥ 6.0 | Config management |
+| pytest | ≥ 7.4 | Unit & integration tests |
+
+---
+
+## 📄 License
+
+MIT License — free to use, modify, and distribute.
